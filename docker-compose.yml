@@ -1,0 +1,11 @@
+version: '3'
+services:
+  ruby:
+    build: .
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      SHOP_URL: "your-shop-url"
+      ACCESS_TOKEN: "your-access-token"
+    command: ./run.sh
