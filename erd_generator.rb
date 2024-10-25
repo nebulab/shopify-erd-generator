@@ -27,11 +27,14 @@ class ERDGenerator
   end
 
   def to_camel(str)
-    str.split(/[-_\s]/).inject([]) { |buffer, e| buffer.push(buffer.empty? ? e : e.capitalize) }.join
+    str.split(/[-_\s]/).inject([]) { |buffer, e| buffer.push(buffer.empty? ? e.downcase : e.capitalize) }.join
   end
 
   def random_color
-    "#" + "%06x" % (rand * 0xffffff)
+    [
+      "#ADD8E6", "#B0E0E6", "#AFEEEE", "#87CEEB", "#87CEFA", "#00BFFF", "#1E90FF", "#6495ED", "#4682B4", "#5F9EA0",
+      "#B0C4DE", "#B0E0E6", "#ADD8E6", "#87CEEB", "#87CEFA", "#00CED1", "#48D1CC", "#40E0D0", "#00FFFF", "#E0FFFF"
+    ].sample
   end
 
   def process_metaobjects
@@ -40,7 +43,7 @@ class ERDGenerator
       color = random_color
       object_name = to_camel(metaobject['type'].gsub('shopify--', '').gsub('_', ' '))
       @existing_objects << object_name
-      @output += "\n\n\n[#{object_name}] {bgcolor: \"#{color}\"}\n"
+      @output += "\n\n\n[#{object_name}] {bgcolor: \"#{color}\", size: \"20\", font: \"Comic Sans MS\" }\n"
       metaobject['fieldDefinitions'].each do |field|
         required = field['required'] ? "not null" : "null"
         label = "#{field['type']['name']}, #{required}"
@@ -50,8 +53,18 @@ class ERDGenerator
         # Identify relationships based on attribute labels
         if field['type']['name'].end_with?('_reference')
           referenced_object = to_camel(field['type']['name'].split('_')[0...-1].join('_'))
-          unless referenced_object.include?('metaobject')
-            @relationships << "#{object_name} 1--1 #{referenced_object} "
+          if referenced_object.include?('list')
+            if referenced_object.include?('metaobject')
+              @relationships << "#{object_name} 1--* #{key}"
+            else
+              @relationships << "#{object_name} 1--* #{referenced_object.split('.').last.to_s}"
+            end
+          else
+            if referenced_object.include?('metaobject')
+              @relationships << "#{object_name} *--1 #{key}"
+            else
+              @relationships << "#{object_name} *--1 #{referenced_object}"
+            end
           end
         end
       end
@@ -62,8 +75,8 @@ class ERDGenerator
     @metafields.each do |key, fields|
       next if fields.empty?
       color = random_color
-      @existing_objects << key
-      @output += "\n\n\n[#{key}] {bgcolor: \"#{color}\"}\n"
+      @existing_objects << key.downcase
+      @output += "\n\n\n[#{key}] {bgcolor: \"#{color}\", size: \"20\", font: \"Comic Sans MS\" }\n"
       fields.each do |field|
         required = field['type']['supportsDefinitionMigrations'] ? "not null" : "null"
         label = "#{field['type']['name']}, #{required}"
@@ -73,26 +86,31 @@ class ERDGenerator
         # Identify relationships based on attribute labels
         if field['type']['name'].end_with?('_reference')
           referenced_object = to_camel(field['type']['name'].split('_')[0...-1].join('_'))
-          unless referenced_object.include?('metaobject')
-            @relationships << "#{key} 1--1 #{referenced_object}"
+          if referenced_object.include?('list')
+            if referenced_object.include?('metaobject')
+              @relationships << "#{key} 1--* #{name}"
+            else
+              @relationships << "#{key} 1--* #{referenced_object.split('.').last.to_s}"
+            end
+          else
+            if referenced_object.include?('metaobject')
+              @relationships << "#{key} *--1 #{name}"
+            else
+              @relationships << "#{key} *--1 #{referenced_object}"
+            end
           end
         end
       end
     end
   end
 
-  def process_relationships(field, object_name)
-    if field['type']['name'].end_with?('_reference')
-      referenced_object = to_camel(field['type']['name'].split('_')[0...-1].join('_'))
-      unless referenced_object.include?('metaobject')
-        @relationships << "#{object_name} 1--1 #{referenced_object}"
-      end
-    end
-  end
-
   def append_missing_objects
     @relationships.each do |relationship|
-      _, referenced_object = relationship.split(' 1--1 ')
+      if relationship.include?(' 1--* ')
+        _, referenced_object = relationship.split(' 1--* ')
+      elsif relationship.include?(' *--1 ')
+        _, referenced_object = relationship.split(' *--1 ')
+      end
       unless @existing_objects.include?(referenced_object.strip)
         color = random_color
         @output += "\n\n\n[#{referenced_object.strip}] {bgcolor: \"#{color}\"}\n"
@@ -109,7 +127,7 @@ class ERDGenerator
   end
 
   def write_output
-    header = "title {label: \"nfldb Entity-Relationship diagram (condensed)\", size: \"20\"}\n\n# Entities\n\n"
+    header = "title {label: \"Entity-Relationship diagram\", size: \"20\"}\n\n# Entities\n\n"
     @output = header + @output
     File.open('erd-files/metafields.er', 'w') do |file|
       file.write(@output)
