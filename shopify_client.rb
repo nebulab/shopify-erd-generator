@@ -12,7 +12,7 @@ class ShopifyClient
   end
 
   def fetch_metafields
-    objects = ['product', 'product_variant', 'collection', 'customer','order', 'draft_order', 'company', 'company_location', 'location', 'page', 'blog', 'market']
+    objects = ['product', 'product_variant', 'collection', 'customer', 'order', 'draft_order', 'company', 'company_location', 'location', 'page', 'blog', 'market', 'payment_customization', 'validation', 'delivery_customization', 'gift_card_transaction', 'cart_transform', 'media_image', 'selling_plan', 'article', 'fulfillment_constraint_rule', 'order_routing_location_rule', 'discount', 'shop']
     metafields = []
     objects.each do |object|
       puts "Fetching #{object} metafields..."
@@ -462,36 +462,457 @@ class ShopifyClient
 
   def market_metafields
     query = <<~QUERY
-        query MetafieldDefinitions {
-            metafieldDefinitions(ownerType: MARKET first: 10) {
-                nodes {
-                    name
-                    type {
-                        category
-                        name
-                        supportsDefinitionMigrations
-                        valueType
-                    }
-                }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
-                    }
-                }
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: MARKET, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
             }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
         }
+      }
     QUERY
 
     @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
   end
+
+  def payment_customization_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: PAYMENT_CUSTOMIZATION, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def validation_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: VALIDATION, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def delivery_customization_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: DELIVERY_CUSTOMIZATION, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def gift_card_transaction_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: GIFT_CARD_TRANSACTION, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def cart_transform_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: CARTTRANSFORM, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def media_image_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: MEDIA_IMAGE, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def selling_plan_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: SELLING_PLAN, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def article_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: ARTICLE, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def fulfillment_constraint_rule_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: FULFILLMENT_CONSTRAINT_RULE, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def order_routing_location_rule_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: ORDER_ROUTING_LOCATION_RULE, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def discount_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: DISCOUNT, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
+  def shop_metafields
+    query = <<~QUERY
+      query MetafieldDefinitions {
+        metafieldDefinitions(ownerType: SHOP, first: 10) {
+          nodes {
+            name
+            type {
+              category
+              name
+              supportsDefinitionMigrations
+              valueType
+            }
+          }
+          edges {
+            node {
+              description
+              id
+              key
+              metafieldsCount
+              name
+              namespace
+              ownerType
+              pinnedPosition
+              useAsCollectionCondition
+              validationStatus
+              visibleToStorefrontApi
+            }
+          }
+        }
+      }
+    QUERY
+
+    @client.query(query: query).body['data']['metafieldDefinitions']['nodes']
+  end
+
 end
