@@ -13,10 +13,20 @@ class ShopifyClient
 
   def fetch_metafields
     objects = ['product', 'product_variant', 'collection', 'customer', 'order', 'draft_order', 'company', 'company_location', 'location', 'page', 'blog', 'market', 'payment_customization', 'validation', 'delivery_customization', 'gift_card_transaction', 'cart_transform', 'media_image', 'selling_plan', 'article', 'fulfillment_constraint_rule', 'order_routing_location_rule', 'discount', 'shop']
-    metafields = []
+    results = []
     objects.each do |object|
       puts "Fetching #{object} metafields..."
-      metafields << self.send("#{object}_metafields")
+      results << self.send("#{object}_metafields")
+    end
+
+    metafields = results.map do |node|
+      node.map do |metafield|
+        {
+          'required' => metafield['type']['supportsDefinitionMigrations'] ? "not null" : "null",
+          'type_name' => metafield['type']['name'],
+          'name' => metafield['name'],
+        }
+      end
     end
 
     objects.zip(metafields).to_h
@@ -49,27 +59,22 @@ class ShopifyClient
                         }
                     }
                 }
-                edges {
-                    node {
-                        description
-                        displayNameKey
-                        hasThumbnailField
-                        id
-                        metaobjectsCount
-                        name
-                        type
-                        fieldDefinitions {
-                            description
-                            key
-                            name
-                            required
-                        }
-                    }
-                }
             }
         }
     QUERY
-    @client.query(query: query).body['data']['metaobjectDefinitions']['nodes']
+    results = @client.query(query: query).body['data']['metaobjectDefinitions']['nodes']
+    objectNames = results.map { |metaobject| metaobject['type'].gsub('shopify--', '').gsub('_', ' ') }
+    definitions = results.map do |metaobject|
+      metaobject['fieldDefinitions'].map do |field|
+        {
+          'key' => field['key'],
+          'required' => field['required'] ? "not null" : "null",
+          'type_name' => field['type']['name']
+        }
+      end
+    end
+
+    objectNames.zip(definitions).to_h
   end
 
 
@@ -86,21 +91,6 @@ class ShopifyClient
                         name
                         supportsDefinitionMigrations
                         valueType
-                    }
-                }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
                     }
                 }
             }
@@ -123,21 +113,6 @@ class ShopifyClient
                         valueType
                     }
                 }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
-                    }
-                }
             }
         }
     QUERY
@@ -156,21 +131,6 @@ class ShopifyClient
                         name
                         supportsDefinitionMigrations
                         valueType
-                    }
-                }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
                     }
                 }
             }
@@ -193,21 +153,6 @@ class ShopifyClient
                         valueType
                     }
                 }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
-                    }
-                }
             }
         }
     QUERY
@@ -226,21 +171,6 @@ class ShopifyClient
                         name
                         supportsDefinitionMigrations
                         valueType
-                    }
-                }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
                     }
                 }
             }
@@ -263,21 +193,6 @@ class ShopifyClient
                         valueType
                     }
                 }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
-                    }
-                }
             }
         }
     QUERY
@@ -296,21 +211,6 @@ class ShopifyClient
                     name
                     supportsDefinitionMigrations
                     valueType
-                }
-            }
-            edges {
-                node {
-                    description
-                    id
-                    key
-                    metafieldsCount
-                    name
-                    namespace
-                    ownerType
-                    pinnedPosition
-                    useAsCollectionCondition
-                    validationStatus
-                    visibleToStorefrontApi
                 }
             }
         }
@@ -333,21 +233,6 @@ class ShopifyClient
                         valueType
                     }
                 }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
-                    }
-                }
             }
         }
     QUERY
@@ -366,21 +251,6 @@ class ShopifyClient
                         name
                         supportsDefinitionMigrations
                         valueType
-                    }
-                }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
                     }
                 }
             }
@@ -403,21 +273,6 @@ class ShopifyClient
                         valueType
                     }
                 }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
-                    }
-                }
             }
         }
     QUERY
@@ -436,21 +291,6 @@ class ShopifyClient
                         name
                         supportsDefinitionMigrations
                         valueType
-                    }
-                }
-                edges {
-                    node {
-                        description
-                        id
-                        key
-                        metafieldsCount
-                        name
-                        namespace
-                        ownerType
-                        pinnedPosition
-                        useAsCollectionCondition
-                        validationStatus
-                        visibleToStorefrontApi
                     }
                 }
             }
@@ -473,21 +313,6 @@ class ShopifyClient
               valueType
             }
           }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
-            }
-          }
         }
       }
     QUERY
@@ -506,21 +331,6 @@ class ShopifyClient
               name
               supportsDefinitionMigrations
               valueType
-            }
-          }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
             }
           }
         }
@@ -543,21 +353,6 @@ class ShopifyClient
               valueType
             }
           }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
-            }
-          }
         }
       }
     QUERY
@@ -576,21 +371,6 @@ class ShopifyClient
               name
               supportsDefinitionMigrations
               valueType
-            }
-          }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
             }
           }
         }
@@ -613,21 +393,6 @@ class ShopifyClient
               valueType
             }
           }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
-            }
-          }
         }
       }
     QUERY
@@ -646,21 +411,6 @@ class ShopifyClient
               name
               supportsDefinitionMigrations
               valueType
-            }
-          }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
             }
           }
         }
@@ -683,21 +433,6 @@ class ShopifyClient
               valueType
             }
           }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
-            }
-          }
         }
       }
     QUERY
@@ -716,21 +451,6 @@ class ShopifyClient
               name
               supportsDefinitionMigrations
               valueType
-            }
-          }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
             }
           }
         }
@@ -753,21 +473,6 @@ class ShopifyClient
               valueType
             }
           }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
-            }
-          }
         }
       }
     QUERY
@@ -786,21 +491,6 @@ class ShopifyClient
               name
               supportsDefinitionMigrations
               valueType
-            }
-          }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
             }
           }
         }
@@ -823,21 +513,6 @@ class ShopifyClient
               valueType
             }
           }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
-            }
-          }
         }
       }
     QUERY
@@ -858,21 +533,6 @@ class ShopifyClient
               valueType
             }
           }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
-            }
-          }
         }
       }
     QUERY
@@ -891,21 +551,6 @@ class ShopifyClient
               name
               supportsDefinitionMigrations
               valueType
-            }
-          }
-          edges {
-            node {
-              description
-              id
-              key
-              metafieldsCount
-              name
-              namespace
-              ownerType
-              pinnedPosition
-              useAsCollectionCondition
-              validationStatus
-              visibleToStorefrontApi
             }
           }
         }

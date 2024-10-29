@@ -38,21 +38,20 @@ class ERDGenerator
   end
 
   def process_metaobjects
-
-    @metaobjects.each do |metaobject|
+    @metaobjects.each do |name, fields|
       color = random_color
-      object_name = to_camel(metaobject['type'].gsub('shopify--', '').gsub('_', ' '))
+      object_name = to_camel(name)
       @existing_objects << object_name
       @output += "\n\n\n[#{object_name}] {bgcolor: \"#{color}\", size: \"20\", font: \"Comic Sans MS\" }\n"
-      metaobject['fieldDefinitions'].each do |field|
-        required = field['required'] ? "not null" : "null"
-        label = "#{field['type']['name']}, #{required}"
+      fields.each do |field|
+        required = field['required']
+        label = "#{field['type_name']}, #{required}"
         key = to_camel(field['key'])
         @output += "  #{key == 'id' ? '*' : ''}#{key} {label: \"#{label}\"}\n"
     
         # Identify relationships based on attribute labels
-        if field['type']['name'].end_with?('_reference')
-          referenced_object = to_camel(field['type']['name'].split('_')[0...-1].join('_'))
+        if field['type_name'].end_with?('_reference')
+          referenced_object = to_camel(field['type_name'].split('_')[0...-1].join('_'))
           if referenced_object.include?('list')
             if referenced_object.include?('metaobject')
               @relationships << "#{object_name} 1--* #{key}"
@@ -78,14 +77,14 @@ class ERDGenerator
       @existing_objects << key.downcase
       @output += "\n\n\n[#{key}] {bgcolor: \"#{color}\", size: \"20\", font: \"Comic Sans MS\" }\n"
       fields.each do |field|
-        required = field['type']['supportsDefinitionMigrations'] ? "not null" : "null"
-        label = "#{field['type']['name']}, #{required}"
+        required = field['required']
+        label = "#{field['type_name']}, #{required}"
         name = to_camel(field['name'])
         @output += "#{name} {label: \"#{label}\"}\n"
     
         # Identify relationships based on attribute labels
-        if field['type']['name'].end_with?('_reference')
-          referenced_object = to_camel(field['type']['name'].split('_')[0...-1].join('_'))
+        if field['type_name'].end_with?('_reference')
+          referenced_object = to_camel(field['type_name'].split('_')[0...-1].join('_'))
           if referenced_object.include?('list')
             if referenced_object.include?('metaobject')
               @relationships << "#{key} 1--* #{name}"
